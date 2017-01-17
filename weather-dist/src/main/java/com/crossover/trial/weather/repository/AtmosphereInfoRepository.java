@@ -11,13 +11,13 @@ public enum AtmosphereInfoRepository implements Repository<AtmosphericInformatio
 	INSTANCE;
 
 	public static Map<String, AtmosphericInformation> db = new ConcurrentHashMap<>();
-	
+
 	public void add(String iata, AtmosphericInformation a) {
 		db.put(iata, a);
 	}
 
-	public void remove(String iata) {
-		db.remove(iata);
+	public boolean remove(String iata) {
+		return db.remove(iata) != null;
 	}
 
 	public AtmosphericInformation get(String iata) {

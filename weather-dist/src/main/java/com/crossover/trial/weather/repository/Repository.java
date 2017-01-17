@@ -6,7 +6,7 @@ public interface Repository<T> {
 
 	void add(String iata, T a);
 
-	void remove(String iata);
+	boolean remove(String iata);
 
 	T get(String iata);
 

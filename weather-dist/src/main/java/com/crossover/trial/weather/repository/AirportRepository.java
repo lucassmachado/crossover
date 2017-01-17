@@ -16,8 +16,8 @@ public enum AirportRepository implements Repository<Airport> {
 		db.put(iata, a);
 	}
 
-	public void remove(String iata) {
-		db.remove(iata);
+	public boolean remove(String iata) {
+		return db.remove(iata) != null;
 	}
 
 	public Airport get(String iata) {

@@ -3,7 +3,10 @@ package com.crossover.trial.weather.endpoint;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.crossover.trial.weather.domain.AtmosphericInformation;
@@ -41,6 +44,8 @@ public class RestWeatherQueryEndpoint implements WeatherQueryEndpoint {
 	 *
 	 * @return health stats for the service as a string
 	 */
+	@GET
+  @Path("/ping")
 	@Override
 	public String ping() {
 		return gson.toJson(weatherService.getServiceHealth().getValues());
@@ -56,11 +61,16 @@ public class RestWeatherQueryEndpoint implements WeatherQueryEndpoint {
 	 *
 	 * @return a list of atmospheric information
 	 */
+	@GET
+	@Path("/weather/{iata}/{radius}")
 	@Override
-	public Response weather(String iata, String radius) {
-		List<AtmosphericInformation> informations = weatherService.getAtmosphericInformations(iata, radius);
+	public Response weather(@PathParam("iata") String iata, @PathParam("radius") String radiusString) {
+		List<AtmosphericInformation> informations = weatherService.getAtmosphericInformations(iata, radiusString);
+		if (informations == null || informations.isEmpty()) {
+			return Response.status(Response.Status.NO_CONTENT).build();
+		}
 
-		return Response.status(Response.Status.OK).entity(informations).build();
+		return Response.status(Response.Status.OK).type(MediaType.APPLICATION_JSON_TYPE).entity(informations).build();
 	}
 
 }

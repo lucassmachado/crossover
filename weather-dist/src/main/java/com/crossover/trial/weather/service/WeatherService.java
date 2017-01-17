@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+
 import com.crossover.trial.weather.domain.Airport;
 import com.crossover.trial.weather.domain.AtmosphericInformation;
 import com.crossover.trial.weather.domain.DataPoint;
+import com.crossover.trial.weather.domain.DataPointType;
 import com.crossover.trial.weather.domain.ServiceHealth;
+import com.crossover.trial.weather.exception.NotFoundException;
 import com.crossover.trial.weather.repository.Repository;
 import com.crossover.trial.weather.service.template.AtmosphericInformationFactory;
 import com.crossover.trial.weather.service.template.AtmosphericInformationUpdater;
@@ -55,14 +58,23 @@ public class WeatherService {
 		atmosphericInfoRepository.add(iata, new AtmosphericInformation());
 	}
 
-	public void deleteAirport(String iata) {
-		airportRepository.remove(iata);
+	public boolean deleteAirport(String iata) {
+		return airportRepository.remove(iata);
 	}
 
+	/**
+	 * Update the airports weather data with the collected data.
+	 *
+	 * @param iataCode the 3 letter IATA code
+	 * @param pointType the point type {@link DataPointType}
+	 * @param dp a datapoint object holding pointType data
+	 *
+	 * @throws NoSuchElementException if the update can not be completed
+	 */
 	public void addDataPoint(String iataCode, String pointType, DataPoint dataPoint) {
 		AtmosphericInformation atmosphericInformation = atmosphericInfoRepository.get(iataCode);
 		if (atmosphericInformation == null) {
-			throw new NoSuchElementException();
+			throw new NotFoundException("Atmospheric Information with iata " + iataCode + " not found.");
 		}
 
 		updateAtmosphericInformation(atmosphericInformation, pointType, dataPoint);

@@ -15,7 +15,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 
 /**
  * A simple airport loader which reads a file from disk and sends entries to the
@@ -27,15 +26,11 @@ import javax.ws.rs.core.MediaType;
  */
 public class AirportLoader {
 
-	/** end point for read queries */
-	private WebTarget query;
-
 	/** end point to supply updates */
 	private WebTarget collect;
 
 	public AirportLoader() {
 		Client client = ClientBuilder.newClient();
-		query = client.target("http://localhost:9090/query");
 		collect = client.target("http://localhost:9090/collect");
 	}
 
@@ -47,7 +42,10 @@ public class AirportLoader {
 			String latitude = line.get(6);
 			String longitude = line.get(7);
 
-			System.out.println(collect.path(String.format("/airport/%s/%s/%s", iata, latitude, longitude)).request().method("POST"));
+			collect
+				.path(String.format("/airport/%s/%s/%s", iata, latitude, longitude))
+				.request()
+				.post(Entity.html(""));
 		}
 
 		System.out.println("Airports >> " + collect.path("/airports").request().get().readEntity(String.class));
